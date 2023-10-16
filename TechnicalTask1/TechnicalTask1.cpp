@@ -1,5 +1,6 @@
 ﻿#include <chrono>
 #include <iostream>
+#include <filesystem>
 #include <fstream>
 #include <functional>
 #include <sstream>
@@ -39,7 +40,7 @@ std::vector<Point3> read_points(std::string filename)
 
     if (!in.is_open())
     {
-        std::cout << "No such file\n";
+        std::cout << "No file: " << filename << "\n";
         return std::vector<Point3>{};
     }
 
@@ -87,7 +88,8 @@ void clean_run(Polyline* p, Point3& P)
 int user_cycle(std::function< void(Polyline* p, Point3& P) > foo, std::string msg = {})
 {
     std::string filename;
-    std::cout << "Enter name of .txt file for polyline:\n";
+    // if there is only file name, without path, assume the file is in the curent working directory
+    std::cout << "Enter full name of .txt file for polyline:\n";
     std::cin >> filename;
     std::cout << "Initializing polyline...\n";
 
@@ -134,7 +136,8 @@ namespace tests
 {
     void test_example1()
     {
-        std::vector<Point3> points = read_points("example1.txt");
+        std::filesystem::path cwd = std::filesystem::current_path();
+        std::vector<Point3> points = read_points(cwd.string() + "/tests/example1.txt");
         Polyline p(points);
         Point3 P{ 2, 0.5, 0.5 };
         auto [dist, ids, projs] = p.locate_point(P);
@@ -150,7 +153,8 @@ namespace tests
     }
     void test_example2()
     {
-        std::vector<Point3> points = read_points("example2.txt");
+        std::filesystem::path cwd = std::filesystem::current_path();
+        std::vector<Point3> points = read_points(cwd.string() + "/tests/example2.txt");
         Polyline p(points);
         
         Point3 P{ 1, 1, 1 };
@@ -173,7 +177,8 @@ namespace tests
 
     void test_example3()
     {
-        std::vector<Point3> points = read_points("example3.txt");
+        std::filesystem::path cwd = std::filesystem::current_path();
+        std::vector<Point3> points = read_points(cwd.string() + "/tests/example3.txt");
         Polyline p(points);
         Point3 P{ 3, 3, 3 };
         auto [dist, ids, projs] = p.locate_point(P);
@@ -192,7 +197,8 @@ namespace tests
     // t 4
     void test_point_is_segment_node()
     {
-        std::vector<Point3> points = read_points("small_tests.txt");
+        std::filesystem::path cwd = std::filesystem::current_path();
+        std::vector<Point3> points = read_points(cwd.string() + "/tests/small_tests.txt");
         Polyline p(points);
         size_t indx = rand() % (points.size() - 1) + 1;
         Point3 P = points[indx];
@@ -213,9 +219,10 @@ namespace tests
     // t 5
     void test_point_outside_bbox()
     {
+        std::filesystem::path cwd = std::filesystem::current_path();
         std::vector<Point3> points;
         try {
-            points = read_points("small_tests.txt");
+            points = read_points(cwd.string() + "/tests/small_tests.txt");
         }
         catch (std::runtime_error& e) {
             std::cout << e.what() << "\n";
@@ -244,6 +251,7 @@ namespace tests
     // t 6
     void test_against_greedy(Polyline* p, Point3& P)
     {
+
         time_t start = clock();
         auto ret_oct = p->locate_point(P);
         auto ticks1 = (clock() - start);
@@ -344,9 +352,10 @@ namespace tests
 }
 ///____________________________________________________________________________________
 
-
 int main(int argc, char** argv)
 {
+    std::filesystem::path cwd = std::filesystem::current_path();
+    std::cout << cwd.string();
     int test = -1;
     InputParser input(argc, argv);
     // option t to run tests
