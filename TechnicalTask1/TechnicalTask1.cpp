@@ -174,7 +174,6 @@ namespace tests
         output_segments(dist, ids, projs);
     }
 
-
     void test_example3()
     {
         std::filesystem::path cwd = std::filesystem::current_path();

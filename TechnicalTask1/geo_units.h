@@ -34,7 +34,6 @@ namespace geo_units
 		double euc_dist(const Point3& p) const
 		{
 			Point3 diff{x - p.x, y-p.y, z-p.z};
-			double res = sqrt(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
 			return sqrt(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
 		}
 	};
