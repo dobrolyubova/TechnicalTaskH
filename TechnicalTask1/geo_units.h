@@ -1,7 +1,7 @@
 #pragma once
 #include <array>
 
-static bool is_equal(const double x, const double y)
+static bool is_equal(const double &x, const double &y)
 {
 	return fabs(x - y) <= std::numeric_limits<double>::epsilon();
 }

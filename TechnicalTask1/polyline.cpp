@@ -7,8 +7,9 @@
 // close to 8^3 (so, at least 3 levels in octree), and also the fact that
 // greedy search in 5000 elements takes fairly negligible time
 static const size_t MAX_OCTANT = 5000;
+static const double eps_pis = 1.e-5;
 
-std::tuple<double, Point3> Segment::euc_dist(Point3& p) const
+std::tuple<double, Point3> Segment::euc_dist(const Point3& p) const
 {
 	// if the Segment end == Segment start:
 	if (*p1 == *p2)
@@ -34,11 +35,17 @@ std::tuple<double, Point3> Segment::euc_dist(Point3& p) const
 	return std::make_tuple(dist, p_proj);
 }
 
-bool Segment::contains_point(Point3& p)
+bool Segment::contains_point(const Point3& p) const
 {
-	return false;
-}
+	Vec3 s_tangent = *(this->p1) - *(this->p2);
+	Vec3 s_beg_proj = (p - *(this->p1));
 
+	double S = (s_tangent.cross(s_beg_proj)).norm() * 0.5;
+	
+	if (S > eps_pis)
+		return false;
+	return true;
+}
 
 Polyline::Polyline(std::vector<Point3>& v)
 {
@@ -48,9 +55,14 @@ Polyline::Polyline(std::vector<Point3>& v)
 	std::move(v.begin(), v.end(), points.begin());
 
 	// xmin, xmax, ymin, ymax, zmin, zmax
-	std::array<double, 6> bounds;
-	bounds[0] = bounds[2] = bounds[4] = std::numeric_limits<double>::max();
-	bounds[1] = bounds[3] = bounds[5] = -std::numeric_limits<double>::max();
+	std::array<double, 6> bounds = { 
+		std::numeric_limits<double>::max(),
+	-std::numeric_limits<double>::max(),
+	std::numeric_limits<double>::max(),
+	-std::numeric_limits<double>::max(),
+	std::numeric_limits<double>::max(),
+	- std::numeric_limits<double>::max() 
+	};
 
 	for (auto& p : points)
 	{
@@ -69,47 +81,20 @@ Polyline::Polyline(std::vector<Point3>& v)
 	}
 	this->bounds = AABBox{
 				Point3{bounds[0], bounds[2], bounds[4]},
-				Point3{bounds[1], bounds[3], bounds[5]}
+				Point3{bounds[1], bounds[3], bounds[5]
+	}
 	};
 
 	octree = std::make_shared<Octree<Segment>>(MAX_OCTANT, true);
 	octree->construct(this->bounds,	points);
 }
 
-std::tuple<double, std::vector<size_t>, std::vector<Point3>> Polyline::locate_point(Point3& p)
+std::tuple<double, std::vector<size_t>, std::vector<Point3>> Polyline::locate_point(const Point3& p)
 {
 	return octree->locate_point(p);
 }
 
-std::tuple<double, std::vector<size_t>, std::vector<Point3>> Polyline::locate_point_greedy(Point3& p)
-{
-	size_t sz_seg = points.size() - 1;
-	double min_dist = std::numeric_limits<double>::max();
-	std::vector<size_t> closest_seg_ids;
-	closest_seg_ids.reserve(sz_seg);
-	std::vector<Point3> projection_points;
-	projection_points.reserve(sz_seg);
-
-	for (size_t i_seg = 0; i_seg < sz_seg; ++i_seg)
-	{
-		auto [dist, proj] = get_segment(i_seg)->euc_dist(p);
-		if (is_equal(min_dist, dist))
-		{
-			closest_seg_ids.push_back(i_seg);
-			projection_points.push_back(proj);
-		}
-		if (min_dist > dist)
-		{
-			min_dist = dist;
-			projection_points = std::vector<Point3>{ proj };
-			closest_seg_ids = std::vector<size_t>{ i_seg };
-		}
-		
-	}
-	return std::make_tuple(min_dist, closest_seg_ids, projection_points);
-}
-
-std::optional<Segment> Polyline::get_segment(size_t id)
+std::optional<Segment> Polyline::get_segment(const size_t &id)
 {
 	if(id < points.size() - 1)
 		return Segment{&points[id], &points[id+1]};

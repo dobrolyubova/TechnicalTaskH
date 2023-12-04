@@ -14,9 +14,8 @@ struct Segment
 {
 	Point3 *p1, *p2;
 	size_t id;
-	std::tuple<double, Point3> euc_dist(Point3& p) const;
-
-	bool contains_point(Point3& p);
+	std::tuple<double, Point3> euc_dist(const Point3& p) const;
+	bool contains_point(const Point3& p) const;
 };
 
 class Polyline
@@ -31,12 +30,9 @@ public:
 	//		mininmum distance, 
 	//		ids of the closest segments, 
 	//		projections onto closest segments
-	std::tuple<double, std::vector<size_t>, std::vector<Point3>> locate_point(Point3& p);
-	std::tuple<double, std::vector<size_t>, std::vector<Point3>> locate_point_greedy(Point3& p);
-	std::optional<Segment> get_segment(size_t id);
-
-	// 
-	double get_max_span()
+	std::tuple<double, std::vector<size_t>, std::vector<Point3>> locate_point(const Point3& p);
+	std::optional<Segment> get_segment(const size_t &id);
+	double get_max_span() const
 	{
 		auto diff = bounds.rMax - bounds.lMin;
 		return std::max(std::max(diff.x , diff.y), diff.z);

@@ -4,7 +4,7 @@
 #include "octree.h"
 #include "polyline.h"
 
-std::shared_ptr<TreeItem<Segment>> Octree<Segment>::construct(AABBox bounds, std::vector<Point3>& points)
+std::shared_ptr<TreeItem<Segment>> Octree<Segment>::construct(AABBox &bounds, std::vector<Point3>& points)
 {
 	time_t start = clock();
 	
@@ -74,13 +74,13 @@ void Octree<T>::insert(std::shared_ptr<T> s, std::shared_ptr<TreeItem<T>>& tree)
 	}
 }
 
-std::tuple<double, std::vector<size_t>, std::vector<Point3>> Octree<Segment>::locate_point(Point3& p)
+std::tuple<double, std::vector<size_t>, std::vector<Point3>> Octree<Segment>::locate_point(const Point3& p)
 {
 	return locate_point(p, root);
 }
 
 template <>
-std::tuple<double, std::vector<size_t>, std::vector<Point3>> Octree<Segment>::locate_point(Point3& p, std::shared_ptr<TreeItem<Segment>>& tree)
+std::tuple<double, std::vector<size_t>, std::vector<Point3>> Octree<Segment>::locate_point(const Point3& p, std::shared_ptr<TreeItem<Segment>>& tree)
 {
 	// if the point is outside the Octree root BBox, obtain the closest projection-point
 	// if the projection is outside BBox, take the closest BBox point
@@ -103,7 +103,7 @@ std::tuple<double, std::vector<size_t>, std::vector<Point3>> Octree<Segment>::lo
 }
 
 template<>
-Point3 Octree<Segment>::project_closest(Point3& p, std::shared_ptr<TreeItem<Segment>>& tree)
+Point3 Octree<Segment>::project_closest(const Point3& p, std::shared_ptr<TreeItem<Segment>>& tree)
 {
 	// project p on every face of the BB and choose the closest
 	std::array<double, 6> pln_dist = {
@@ -149,7 +149,7 @@ std::tuple<double,
 	std::vector<size_t>, 
 	std::vector<Point3>>
 	Octree<Segment>::depth_first_search(
-		Point3& p, Point3& p_proj, std::shared_ptr<TreeItem<Segment>>& tree)
+		const Point3& p, Point3& p_proj, std::shared_ptr<TreeItem<Segment>>& tree)
 {
 	std::vector<size_t> min_ids{};
 	std::vector<Point3> min_proj{};

@@ -17,7 +17,7 @@ struct AABBox
 	bool is_inside(const T& s) const;
 	bool is_inside(const Point3& s) const;
 	std::array<Point3, 8> get_all_points() const;
-	std::array<Point3, 4> get_plane_points(size_t id) const;
+	std::array<Point3, 4> get_plane_points(const size_t &id) const;
 };
 
 template <class T>
@@ -25,7 +25,7 @@ class TreeItem
 {
 public:
 	std::vector<std::shared_ptr<TreeItem>> descendants;
-	std::vector<std::shared_ptr< T>> data;
+	std::vector<std::shared_ptr<T>> data;
 	AABBox bounds;
 
 	TreeItem(AABBox bounds) : bounds(bounds) {}

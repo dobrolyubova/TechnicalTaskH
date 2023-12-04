@@ -82,7 +82,7 @@ std::array<Point3, 8> AABBox::get_all_points() const
 // -----------
 //X/
 
-std::array<Point3, 4> AABBox::get_plane_points(size_t id) const
+std::array<Point3, 4> AABBox::get_plane_points(const size_t &id) const
 {
 
 	switch (id)

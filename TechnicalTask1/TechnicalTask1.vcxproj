@@ -149,6 +149,7 @@
     <ClCompile Include="octree_item.cpp" />
     <ClCompile Include="polyline.cpp" />
     <ClCompile Include="TechnicalTask1.cpp" />
+    <ClCompile Include="tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="geo_units.h" />
@@ -156,6 +157,7 @@
     <ClInclude Include="octree.h" />
     <ClInclude Include="octree_item.h" />
     <ClInclude Include="polyline.h" />
+    <ClInclude Include="tests.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
