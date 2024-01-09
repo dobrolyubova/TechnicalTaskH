@@ -83,8 +83,9 @@ int main(int argc, char** argv)
     }
     auto [dist, ids, projs] = p->locate_point(P);
     output_segments(dist, ids, projs);
+    system("pause");
     delete p;
-    return 1;
+    return 0;
    
 }
 
